@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Live Code Editor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-light: #f4f4f4;
+      --bg-dark: #1e1e1e;
+      --text-light: #1e1e1e;
+      --text-dark: #f4f4f4;
+      --primary: #00b894;
+      --transition: 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background-color: var(--bg-light);
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background-color: var(--primary);
+      color: white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .toggle-btn {
+      background-color: white;
+      color: var(--primary);
+      border: none;
+      padding: 6px 12px;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .editor-container {
+      display: flex;
+      flex: 1;
+      flex-direction: row;
+    }
+
+    textarea {
+      width: 50%;
+      height: 100%;
+      padding: 15px;
+      font-family: monospace;
+      font-size: 15px;
+      border: none;
+      outline: none;
+      resize: none;
+      background-color: #ffffff;
+      color: #333;
+      border-right: 1px solid #ccc;
+      transition: var(--transition);
+    }
+
+    iframe {
+      width: 50%;
+      height: 100%;
+      border: none;
+      background: white;
+      transition: var(--transition);
+    }
+
+    .bottom-bar {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 10px;
+      background-color: #f8f8f8;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.05);
+      transition: var(--transition);
+    }
+
+    .download-btn {
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 15px;
+      font-weight: bold;
+      border-radius: 25px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 8px;
+      transition: var(--transition);
+    }
+
+    .download-btn:hover {
+      background-color: #019170;
+    }
+
+    .bottom-bar small {
+      color: #888;
+    }
+
+    body.dark-mode {
+      background-color: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    body.dark-mode textarea {
+      background-color: #2c2c2c;
+      color: #f1f1f1;
+      border-right: 1px solid #444;
+    }
+
+    body.dark-mode iframe {
+      background-color: #1e1e1e;
+    }
+
+    body.dark-mode .bottom-bar {
+      background-color: #2a2a2a;
+    }
+
+    body.dark-mode .bottom-bar small {
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      .editor-container {
+        flex-direction: column;
+      }
+      textarea, iframe {
+        width: 100%;
+        height: 50%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🔴 Live Code Editor</h1>
+    <button class="toggle-btn" onclick="toggleMode()">Toggle Mode</button>
+  </header>
+
+  <div class="editor-container">
+    <textarea id="code" placeholder="Write HTML + CSS + JS here..."></textarea>
+    <iframe id="preview"></iframe>
+  </div>
+
+  <div class="bottom-bar">
+    <button class="download-btn" onclick="downloadCode()">Download Code</button>
+    <small>© 2025 | Developed by: Tanbir Hasan</small>
+  </div>
+
+  <script>
+    const codeArea = document.getElementById("code");
+    const previewFrame = document.getElementById("preview");
+
+    codeArea.addEventListener("input", () => {
+      const code = codeArea.value;
+      previewFrame.srcdoc = code;
+    });
+
+    function toggleMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function downloadCode() {
+      const code = codeArea.value;
+      const blob = new Blob([code], { type: "text/html" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "my_code.html";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Default Template Code
+    codeArea.value = `<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; text-align: center; margin-top: 50px; }
+    button { background-color: teal; color: white; padding: 10px 20px; border: none; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Hello, World!</h2>
+  <p>This is a live HTML, CSS, and JS editor.</p>
+  <button onclick="alert('Button Clicked!')">Click Me</button>
+</body>
+</html>`;
+    previewFrame.srcdoc = codeArea.value;
+  </script>
+</body>
+</html>
