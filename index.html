@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Live Code Editor</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
   <style>
     :root {
       --bg-light: #f4f4f4;
@@ -60,10 +61,41 @@
       display: flex;
       flex: 1;
       flex-direction: row;
+      position: relative;
+    }
+
+    .editor-left {
+      display: flex;
+      flex-direction: column;
+      width: 50%;
+      position: relative;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: flex-end;
+      padding: 10px 10px 0 10px;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .toolbar button {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: 0.2s;
+    }
+
+    .toolbar button:hover {
+      background: #019170;
     }
 
     textarea {
-      width: 50%;
+      width: 100%;
       height: 100%;
       padding: 15px;
       font-family: monospace;
@@ -75,6 +107,7 @@
       color: #333;
       border-right: 1px solid #ccc;
       transition: var(--transition);
+      flex: 1;
     }
 
     iframe {
@@ -144,26 +177,41 @@
       .editor-container {
         flex-direction: column;
       }
-      textarea, iframe {
+
+      .editor-left, iframe {
         width: 100%;
         height: 50%;
+      }
+
+      .toolbar {
+        justify-content: center;
+        padding: 10px 0;
       }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>🔴 Live Code Editor</h1>
+    <h1>?? Live Code Editor</h1>
     <button class="toggle-btn" onclick="toggleMode()">Toggle Mode</button>
   </header>
 
   <div class="editor-container">
-    <textarea id="code" placeholder="Write HTML + CSS + JS here..."></textarea>
+    <div class="editor-left">
+      <div class="toolbar">
+        <button onclick="undo()" title="Undo"><i class="ri-arrow-go-back-line"></i></button>
+        <button onclick="redo()" title="Redo"><i class="ri-arrow-go-forward-line"></i></button>
+        <button onclick="pasteCode()" title="Paste"><i class="ri-clipboard-line"></i></button>
+        <button onclick="copyCode()" title="Copy All"><i class="ri-file-copy-line"></i></button>
+        <button onclick="clearCode()" title="Clear All"><i class="ri-delete-bin-line"></i></button>
+      </div>
+      <textarea id="code" placeholder="Write HTML + CSS + JS here..."></textarea>
+    </div>
     <iframe id="preview"></iframe>
   </div>
 
   <div class="bottom-bar">
-    <button class="download-btn" onclick="downloadCode()">Download Code</button>
+    <button class="download-btn" onclick="downloadCode()">?? Download Code</button>
     <small>© 2025 | Developed by: Tanbir Hasan</small>
   </div>
 
@@ -172,8 +220,7 @@
     const previewFrame = document.getElementById("preview");
 
     codeArea.addEventListener("input", () => {
-      const code = codeArea.value;
-      previewFrame.srcdoc = code;
+      previewFrame.srcdoc = codeArea.value;
     });
 
     function toggleMode() {
@@ -181,8 +228,7 @@
     }
 
     function downloadCode() {
-      const code = codeArea.value;
-      const blob = new Blob([code], { type: "text/html" });
+      const blob = new Blob([codeArea.value], { type: "text/html" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -191,7 +237,33 @@
       URL.revokeObjectURL(url);
     }
 
-    // Default Template Code
+    function undo() {
+      document.execCommand('undo');
+    }
+
+    function redo() {
+      document.execCommand('redo');
+    }
+
+    function copyCode() {
+      codeArea.select();
+      document.execCommand("copy");
+      alert("Code copied!");
+    }
+
+    function pasteCode() {
+      navigator.clipboard.readText().then(text => {
+        codeArea.setRangeText(text, codeArea.selectionStart, codeArea.selectionEnd, "end");
+        codeArea.dispatchEvent(new Event("input"));
+      });
+    }
+
+    function clearCode() {
+      codeArea.value = '';
+      previewFrame.srcdoc = '';
+    }
+
+    // Default Template
     codeArea.value = `<!DOCTYPE html>
 <html>
 <head>
